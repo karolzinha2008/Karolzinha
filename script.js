@@ -1,40 +1,61 @@
-let secretNumber;
+let randomNumber = Math.floor(Math.random() * 100) + 1;
 let attempts = 0;
-
-function startGame() {
-    secretNumber = Math.floor(Math.random() * 100) + 1;  // Número entre 1 e 100
-    attempts = 0;
-    document.getElementById("feedback").innerText = '';
-    document.getElementById("attempts").innerText = 'Tentativas: ' + attempts;
-    document.getElementById("resetButton").style.display = 'none';
-}
+const feedbackElement = document.getElementById("feedback");
+const attemptsElement = document.getElementById("attempts");
+const resetButton = document.getElementById("resetButton");
+const guessInput = document.getElementById("guess");
 
 function checkGuess() {
-    const guess = parseInt(document.getElementById("guess").value);
-    const feedback = document.getElementById("feedback");
-    const attemptsDisplay = document.getElementById("attempts");
-
-    if (!guess || guess < 1 || guess > 100) {
-        feedback.innerText = "Por favor, insira um número válido entre 1 e 100.";
+    const userGuess = parseInt(guessInput.value);
+    
+    if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
+        feedbackElement.textContent = "Por favor, insira um número entre 1 e 100!";
+        feedbackElement.style.color = "#dc3545"; // cor de erro
         return;
     }
 
     attempts++;
-    attemptsDisplay.innerText = 'Tentativas: ' + attempts;
+    attemptsElement.textContent = `Tentativas: ${attempts}`;
 
-    if (guess === secretNumber) {
-        feedback.innerText = "Parabéns! Você acertou o número!";
-        document.getElementById("resetButton").style.display = 'inline-block';
-    } else if (guess < secretNumber) {
-        feedback.innerText = "Muito baixo! Tente novamente.";
+    if (userGuess === randomNumber) {
+        feedbackElement.textContent = "Parabéns! Você acertou o número!";
+        feedbackElement.style.color = "#28a745"; // cor de sucesso
+        feedbackElement.classList.add("correct");
+        resetButton.style.display = "inline-block"; // Mostrar botão de reset
+        playSound("correct");
+    } else if (userGuess < randomNumber) {
+        feedbackElement.textContent = "O número é maior! Tente novamente.";
+        feedbackElement.style.color = "#ffc107"; // cor de aviso
+        feedbackElement.classList.add("wrong");
+        playSound("wrong");
     } else {
-        feedback.innerText = "Muito alto! Tente novamente.";
+        feedbackElement.textContent = "O número é menor! Tente novamente.";
+        feedbackElement.style.color = "#ffc107"; // cor de aviso
+        feedbackElement.classList.add("wrong");
+        playSound("wrong");
     }
+
+    guessInput.value = ""; // Limpa o campo de entrada
+    guessInput.focus();
 }
 
 function resetGame() {
-    startGame();
-    document.getElementById("guess").value = '';
+    randomNumber = Math.floor(Math.random() * 100) + 1;
+    attempts = 0;
+    attemptsElement.textContent = `Tentativas: ${attempts}`;
+    feedbackElement.textContent = "";
+    feedbackElement.classList.remove("correct", "wrong");
+    resetButton.style.display = "none";
+    guessInput.value = "";
+    guessInput.focus();
 }
 
-startGame();  // Inicia o jogo ao carregar a página
+function playSound(type) {
+    const audio = new Audio();
+    if (type === "correct") {
+        audio.src = "https://www.soundjay.com/button/beep-07.wav"; // som de sucesso
+    } else if (type === "wrong") {
+        audio.src = "https://www.soundjay.com/button/beep-08b.wav"; // som de erro
+    }
+    audio.play();
+}
