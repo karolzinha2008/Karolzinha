@@ -1,10 +1,90 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Jogo de Adivinhação de Número</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* CSS do jogo decorado */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            display: flex;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+        }
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 30px 40px;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+        }
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        input[type="number"] {
+            width: 80%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            outline: none;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        button {
+            background-color: #ff6f61;
+            color: white;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 111, 97, 0.4);
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #ff3b2f;
+        }
+        #feedback {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            min-height: 24px;
+        }
+        #attempts {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+        #resetButton {
+            background-color: #4caf50;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            display: none;
+        }
+        #resetButton:hover {
+            background-color: #388e3c;
+        }
+    </style>
 </head>
 <body>
     <div class="game-container">
@@ -16,10 +96,55 @@
 
         <p id="feedback"></p>
         <p id="attempts">Tentativas: 0</p>
-        <button id="resetButton" style="display: none;" onclick="resetGame()">Jogar Novamente</button>
+        <button id="resetButton" onclick="resetGame()">Jogar Novamente</button>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        let randomNumber = Math.floor(Math.random() * 100) + 1;
+        let attempts = 0;
+
+        function checkGuess() {
+            const guessInput = document.getElementById('guess');
+            const feedback = document.getElementById('feedback');
+            const attemptsDisplay = document.getElementById('attempts');
+            const resetButton = document.getElementById('resetButton');
+
+            const guess = Number(guessInput.value);
+            if (!guess || guess < 1 || guess > 100) {
+                feedback.textContent = 'Por favor, digite um número válido entre 1 e 100.';
+                return;
+            }
+
+            attempts++;
+            attemptsDisplay.textContent = 'Tentativas: ' + attempts;
+
+            if (guess === randomNumber) {
+                feedback.textContent = '🎉 Parabéns! Você acertou!';
+                resetButton.style.display = 'inline-block';
+                guessInput.disabled = true;
+                document.querySelector('button[onclick="checkGuess()"]').disabled = true;
+            } else if (guess < randomNumber) {
+                feedback.textContent = 'Tente um número maior!';
+            } else {
+                feedback.textContent = 'Tente um número menor!';
+            }
+
+            guessInput.value = '';
+            guessInput.focus();
+        }
+
+        function resetGame() {
+            randomNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('attempts').textContent = 'Tentativas: 0';
+            document.getElementById('guess').disabled = false;
+            document.getElementById('guess').value = '';
+            document.getElementById('guess').focus();
+            document.querySelector('button[onclick="checkGuess()"]').disabled = false;
+            document.getElementById('resetButton').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
 
